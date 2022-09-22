@@ -5,9 +5,11 @@ from time import sleep
 from typing import List, Dict
 from random import randint
 from time import sleep as sleep2
+from xmlrpc.client import boolean
 
+#Global vars
 start: int = 0
-args_tags = ["-c", "-n", "-w"]
+args_tags: List[str] = ["-c", "-n", "-w"]
 
 
 def main() -> None:
@@ -26,12 +28,18 @@ def main() -> None:
     exit(255)
 
 
-def read_args() -> Dict[str, str]:
+def read_args() -> Dict[str, int]:
+    """Read args from the prompt and check if it has the correct syntax
+
+    Returns:
+        Dict[str, int]: return the result of syntax, with the key as str and the value as int
     """
-    Check for args and return in a dict
-    """
+    
+    # Messages
     message_args = 'Input error, please use the "-c -n -w (optional)" arguments.'
     message_int = 'Please, use int values in the arguments.'
+    
+    #
     args: List[str] = sys.argv[1:]
     args = [x_arg.lower() for x_arg in args]
     if len(args) % 2 != 0:
@@ -41,17 +49,18 @@ def read_args() -> Dict[str, str]:
 
     args_chaves: List(str) = list(args.keys())
     args_values: List(str) = list(args.values())
-
-
+    
+    # Check if any unknow value is present in the input args
     if any([True if x not in args_tags else False for x in args_chaves]):
         print(message_args)
         exit(255)
 
-    # Check if all args are inserted.
+    # Check if all mandatiry args are inserted.
     if len(set(('-c', '-n')).intersection(set(args_chaves))) != 2:
         print(message_args)
         exit(255)
-
+        
+    # Change args values to int
     try:
         args_values: List(int) = [int(x) for x in args_values]
     
@@ -59,7 +68,7 @@ def read_args() -> Dict[str, str]:
         print(message_int)
         exit(255)
     
-    args = dict(zip(args_chaves,args_values))
+    args: Dict[str, int] = dict(zip(args_chaves,args_values))
     return args
 
 
@@ -76,17 +85,12 @@ def list_to_dict(lista: List[str]) -> Dict[str, str]:
 def exec_drawn(args: Dict[str, int]) -> None:
     """
     Execute the drawn
-    """
-    
+    """    
     chosen: int = args['-c']
-    #print(f"O seu número é o {chosen}.")
-    #print(f"O sorteio será entre os números {start} e {args['-n']}.")
-    #print(f"A probabilidade de sorteio é de {round(100*1/len(range(start,args['-n']+1)),2)}%.")
-
     drawn: int = randint(0,args['-n'])
 
     if drawn == chosen:
-        print(f"Numero sorteado{ drawn} confere com o seu!")
+        print(f"Numero sorteado ({drawn}) confere com o seu!")
         print("ヽ(´▽`)/")
         print("\n")
         exit(0)
